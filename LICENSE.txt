@@ -1,0 +1,263 @@
+JoripSpace Template License 1.0
+Version 1.0 — 19 August 2026
+
+Copyright (c) 2026 Cosmosfarm Software (코스모스팜 소프트웨어)
+
+All rights reserved except as expressly granted under this License.
+
+
+1. Scope, Definitions, and Acceptance
+
+1.1 "Licensor" means the copyright holder doing business as Cosmosfarm Software (코스모스팜 소프트웨어), as identified above, and any lawful successor or assignee of the relevant rights.
+
+1.2 "You" means the individual or legal entity exercising permissions under this License. If You act for an organization, You represent that You have authority to bind it, and "You" refers to that organization.
+
+1.3 "Software" means the source code, object code, configuration files, database schemas, migrations, documentation, designs, and other original materials distributed with this License for which the Licensor has authority to grant rights. Software excludes materials governed by a separately identified third-party license.
+
+1.4 "Modified Software" means a modification, adaptation, translation, arrangement, derivative work, or other material based on the Software, but only to the extent that it contains or is derived from protectable portions of the Software.
+
+1.5 "End Product" means a website, application, API, SaaS service, internal system, or other software product that provides substantive functionality beyond merely providing reusable templates, starter code, software generation, software development, or generalized software deployment or management capabilities.
+
+1.6 "Competitive Platform" means a generalized product or service offered to third parties, whether free or paid, whose primary purpose is to enable those third parties to create, generate, configure, develop, deploy, host, or manage websites, applications, APIs, or software projects through reusable templates, starter projects, AI coding agents, automated code generation, no-code or low-code tools, or an integrated application-creation and deployment workflow.
+
+1.7 The Software or Modified Software is a "Material Component" of an offering when it materially contributes to the offering's reusable template, starter-project, application-generation, or generalized deployment functionality, including where removing it would materially reduce that functionality.
+
+1.8 By copying, modifying, deploying, distributing, or otherwise exercising any permission granted by this License, You accept and agree to comply with this License. If You do not accept it, You may not exercise those permissions.
+
+1.9 Every permission granted by this License is expressly conditioned on compliance with its terms.
+
+
+2. License Grant
+
+Subject to this License, the Licensor grants You a worldwide, royalty-free, non-exclusive, non-transferable, and non-sublicensable license, except as expressly permitted by this License, perpetual for the version of the Software You lawfully receive and terminable only under Section 10, to:
+
+- use, run, reproduce, inspect, study, test, and make reasonable backup and archival copies of the Software;
+- modify, adapt, translate, and create Modified Software;
+- create, deploy, host, maintain, and operate End Products;
+- use the Software for personal, internal, educational, nonprofit, or commercial purposes;
+- build and operate commercial websites, applications, APIs, SaaS products, and internal systems;
+- use AI agents, development tools, source-control services, and CI/CD systems to inspect, modify, build, test, or deploy the Software;
+- deploy the Software or an End Product on JoripSpace, Cloudflare, Your own infrastructure, or any other hosting or cloud provider;
+- export or migrate an End Product away from JoripSpace and continue operating it independently;
+- provide development, consulting, customization, integration, hosting, maintenance, or support services using the Software; and
+- distribute or transfer an End Product, including its source code, as permitted below.
+
+Commercial use is expressly permitted.
+
+No payment or continued subscription to JoripSpace is required to exercise these rights for a version of the Software that You have already lawfully received. This does not grant free access to JoripSpace hosted services, infrastructure, support, updates, or future versions.
+
+You may permit Your employees, contractors, professional advisers, hosting providers, and other service providers to exercise these rights solely on Your behalf and for a permitted purpose. They receive no independent right to use the Software, and You are responsible for their compliance with this License.
+
+To the extent permitted by applicable law, the Licensor waives and agrees not to assert moral rights in the Software against acts expressly permitted by this License. Where waiver is not legally permitted, the Licensor agrees not to assert those rights to the extent necessary for permitted use, modification, and distribution.
+
+
+3. End Products, Commercial Use, and Customer Projects
+
+3.1 You may create, sell, license, host, operate, maintain, or transfer End Products made using the Software. An End Product may be commercial, proprietary, closed source, internally operated, customer-hosted, or provided as a hosted service. Its source code may also be publicly available, subject to this License.
+
+Permitted End Products include, without limitation, online stores, learning services, booking or reservation services, company websites, communities, document systems, monitoring services, customer-management systems, internal business systems, and SaaS products serving a specific business function.
+
+3.2 An End Product does not become a Competitive Platform merely because it lets users manage content, configure forms, customize branding or layouts, automate workflows, create courses, manage stores or bookings, or deploy features within that End Product, provided its primary purpose remains a specific business function rather than generalized creation or deployment of arbitrary software projects.
+
+3.3 Developers, agencies, consultants, and companies may build, customize, host, maintain, and deliver End Products to one or more customers. Providing services to multiple customers is permitted when the activity delivers End Products or genuine customer-specific development services rather than reusable templates or a Competitive Platform.
+
+3.4 When a customer lawfully receives an End Product containing the Software, the Licensor directly grants that customer, subject to this License, a worldwide, royalty-free, non-exclusive, non-transferable, and non-sublicensable license, except as expressly permitted in this Section, to:
+
+- use, run, host, deploy, maintain, and operate the Software solely as part of that End Product;
+- make copies reasonably necessary for production, staging, testing, backup, disaster recovery, and internal operations;
+- modify and extend the Software for that End Product and its successor or replacement versions;
+- engage employees, contractors, hosting providers, and other service providers to perform those activities on the customer's behalf; and
+- transfer the End Product and these accompanying rights to a successor or acquirer as part of a lawful transfer of the End Product or substantially all of the business or assets to which it relates.
+
+3.5 A customer may not extract, package, or use the Software or Modified Software to create or offer a reusable template, starter product, or Competitive Platform.
+
+3.6 A source-code delivery to a customer must include the copyright notice and a complete, unmodified copy of this License in the repository root or another reasonably prominent location.
+
+3.7 A bona fide customer's direct license under this Section survives termination of the delivering party's license if the customer received a qualifying End Product before termination, complies with this License, and did not knowingly participate in the violation that caused termination.
+
+
+4. Template Redistribution Restriction
+
+You may not sell, license, sublicense, publish, distribute, list, package, or otherwise make the Software or Modified Software available primarily as:
+
+- a reusable website or application template;
+- a starter kit or starter project;
+- boilerplate;
+- a theme;
+- a template package or template library;
+- a template, theme, starter-kit, boilerplate, or source-code marketplace product; or
+- another substantially similar reusable development product.
+
+This restriction applies even if the Software or Modified Software is renamed, translated, restyled, reorganized, bundled, or altered where its principal value remains the reusable code, structure, design, configuration, components, or starter functionality derived from the Software.
+
+Without separate written permission from the Licensor, You may not sell or distribute access to a repository, archive, bundle, package, or download whose primary purpose is to provide the Software as a reusable development starting point.
+
+This Section does not prohibit:
+
+- delivering source code as part of an End Product under Section 3;
+- sharing the Software privately with persons acting solely on Your behalf;
+- publishing an End Product repository as permitted by Section 6;
+- maintaining a permitted development fork under Section 6; or
+- distributing source code where the primary purpose and principal value of the distribution is the End Product itself rather than reuse of the Software as a template or starter product.
+
+
+5. Competitive Platform Restriction
+
+You may not use, embed, integrate, host, expose, distribute, or otherwise make the Software or Modified Software available as a Material Component of a Competitive Platform.
+
+This includes using the Software or Modified Software as:
+
+- a template or starter project in a generalized website or application builder;
+- a reusable project in a template marketplace or project-generation catalog;
+- a material reusable input, retrieval source, or project base for an AI system that generates websites, applications, APIs, or software projects for third parties;
+- a material part of a no-code or low-code product for creating arbitrary or varied software projects; or
+- a material part of an integrated platform whose customers can select, generate, configure, deploy, or manage generalized software projects.
+
+The following activities are not, by themselves, operating a Competitive Platform:
+
+- operating Your own website, application, API, or SaaS business;
+- building software for Your own organization;
+- creating, hosting, or maintaining End Products for customers;
+- providing custom development, consulting, integration, or maintenance services;
+- using an internal agency or developer tool to produce customer-specific End Products, provided customers are not offered generalized self-service project creation or deployment;
+- using general-purpose IDEs, AI coding tools, source-control services, CI/CD services, cloud infrastructure, or hosting services with the Software; or
+- operating a commercial SaaS product whose primary purpose is a specific business function rather than enabling customers to create or deploy arbitrary software projects.
+
+A product does not become a Competitive Platform solely because the Licensor later adds similar business functionality to JoripSpace.
+
+Any use prohibited by this Section requires a separate written license from the Licensor.
+
+
+6. Public Repositories, Modifications, and Notices
+
+6.1 You may modify any part of the Software. You are not required to publish or disclose Your modifications and may keep them private.
+
+6.2 You retain ownership of original code and materials that You create, subject to the Licensor's rights in the Software and third-party rights. You may apply proprietary, source-available, or open-source terms to Your original additions, provided those terms do not purport to relicense the original Software, restrict rights directly granted to a customer under Section 3, or conflict with applicable third-party licenses.
+
+6.3 You may publish the source code of an End Product, including in a public Git repository, if:
+
+- the repository's primary purpose is to provide, operate, document, or collaborate on that End Product rather than distribute a reusable template or starter project;
+- the copyright notice and a complete, unmodified copy of this License are retained;
+- the repository does not state or imply that the original Software is licensed under different terms; and
+- the repository is not used as a Material Component of a Competitive Platform.
+
+6.4 You may publicly maintain a fork solely for good-faith evaluation, security review, issue reproduction, development, collaboration, or contribution, provided that You:
+
+- retain the copyright notice and a complete, unmodified copy of this License;
+- clearly identify the fork as unofficial and modified, unless it is an unmodified mirror;
+- do not market, sell, monetize, list, package, or promote it as a reusable template, starter kit, or marketplace product; and
+- do not use it for a Competitive Platform.
+
+A fork primarily maintained to distribute or promote a reusable template, starter product, or Competitive Platform is not permitted regardless of how it is labeled.
+
+6.5 If You publicly distribute the Software, Modified Software, or source code containing a substantial portion of either, or deliver such source code to a customer, You must:
+
+- retain applicable copyright, license, and attribution notices;
+- include a complete, unmodified copy of this License in the repository root or another reasonably prominent location; and
+- provide a reasonable notice that the Software has been modified, such as in a changelog, README, or source-control history.
+
+6.6 You are not required to make an End Product's source code public. You are not required to display "JoripSpace," the JoripSpace logo, a copyright notice, or a license notice in an End Product's user interface. You may remove JoripSpace branding from the user interface, but may not remove or obscure copyright or license notices from distributed source code.
+
+6.7 A README, FAQ, marketing page, or informal summary may explain this License but does not modify it. If an explanation conflicts with this License, this License controls unless the Licensor enters into a separate written agreement.
+
+
+7. No Platform Lock-In and Separate Service Terms
+
+Nothing in this License requires an End Product to remain on JoripSpace.
+
+You may export, migrate, host, deploy, modify, and operate an End Product independently of JoripSpace. You may connect it to Your own Git repository and use Your own build, deployment, database, storage, hosting, monitoring, and infrastructure services.
+
+This License governs the Software only. JoripSpace hosted services, accounts, subscriptions, infrastructure, support, service levels, marketplaces, and other services may be governed by separate terms. Expiration or termination of those services does not terminate rights under this License to a version of the Software already lawfully received.
+
+
+8. Third-Party Materials, Patents, and Trademarks
+
+8.1 Third-Party Materials. The Software may include or depend on third-party software, libraries, packages, fonts, images, data, or other materials. Those materials remain subject to their respective licenses and terms. A separately identified license controls for the material it covers. This License grants rights only to materials for which the Licensor has authority to grant rights.
+
+8.2 Patent License. Subject to this License, the Licensor grants You a worldwide, royalty-free, non-exclusive patent license under patent claims owned or controlled by the Licensor that are necessarily infringed by the Software as distributed by the Licensor, whether the Software is used alone or incorporated into Modified Software or an End Product, solely to make, have made, use, offer for sale, sell, import, and otherwise exercise the permissions granted by this License. This patent license does not cover claims infringed only because of Your modifications, additions, or combinations with other technology.
+
+If You or an entity You control initiate patent litigation alleging that the Software infringes or contributes to infringement of a patent, this patent license terminates when the claim is filed. This does not apply to a compulsory defensive counterclaim made in response to patent litigation first brought against You.
+
+8.3 Trademarks. This License does not grant permission to use the JoripSpace name, logo, trademarks, service marks, trade dress, domain names, or other brand identifiers, except as reasonably necessary to truthfully describe the origin of the Software or reproduce notices required by this License. You may not imply that Your product, service, template, fork, or platform is official, sponsored, certified, or endorsed by the Licensor without separate written permission.
+
+
+9. Contributions
+
+"Contribution" means code, documentation, designs, or other copyrightable material that You intentionally submit to the Licensor for inclusion in the Software, including through a pull request or patch. Material conspicuously marked "Not a Contribution" is excluded.
+
+By intentionally submitting a Contribution, unless a separate written contribution agreement applies, You grant the Licensor a perpetual, worldwide, irrevocable, royalty-free, non-exclusive, transferable, and sublicensable license under copyright and similar rights to use, reproduce, modify, adapt, publish, distribute, make available, and relicense the Contribution in any form. You also grant the Licensor a perpetual, worldwide, irrevocable, royalty-free, non-exclusive, transferable, and sublicensable patent license under patent claims You can license that are necessarily infringed by the Contribution alone or by its combination with the Software as submitted, solely to make, have made, use, offer for sale, sell, import, distribute, and otherwise exercise rights in the Contribution and Software incorporating it.
+
+To the extent permitted by law, You waive and agree not to assert moral rights in the Contribution against uses authorized by the Licensor. You represent that You have sufficient rights and authority to submit the Contribution and grant these rights. Ownership of Your Contribution is not transferred merely by this Section.
+
+
+10. Future Versions, Termination, and Reinstatement
+
+10.1 The Licensor may release future versions of the Software under this License or different terms. A future license change does not retroactively change rights granted for a version You already lawfully received. This License does not grant an automatic right to updates or future versions.
+
+10.2 Your rights terminate automatically if You materially violate this License.
+
+10.3 For a first violation that is curable and not willful, Your rights are automatically reinstated retroactively if You fully cure it within 30 days after the earlier of receiving written notice from the Licensor or becoming aware of the violation.
+
+10.4 Automatic reinstatement is not available for a willful violation of Section 4 or Section 5, a repeated violation of the same provision after a previous cure, fraud, deliberate concealment, or knowing misrepresentation of licensing rights. Reinstatement in those cases requires the Licensor's written consent.
+
+10.5 After termination, You must stop activities requiring permission under this License. You may take only limited actions reasonably necessary to preserve customer data, protect security, comply with law, or safely discontinue an affected service. You may not accept new customers, expand a prohibited use, or use this transition provision to continue a reusable template offering or Competitive Platform.
+
+10.6 Termination does not terminate a bona fide customer's direct license that survives under Section 3.7.
+
+10.7 Provisions that by their nature should survive termination, including surviving customer rights, distribution and notice obligations, third-party license obligations, trademark restrictions, contribution grants, warranty disclaimers, liability limitations, governing-law provisions, and general provisions, survive termination.
+
+
+11. Disclaimer of Warranty and Support
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES, REPRESENTATIONS, CONDITIONS, OR GUARANTEES OF ANY KIND, WHETHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT, ACCURACY, SECURITY, RELIABILITY, COMPATIBILITY, OR ERROR-FREE OPERATION.
+
+THE LICENSOR DOES NOT WARRANT THAT THE SOFTWARE WILL MEET YOUR REQUIREMENTS, OPERATE WITHOUT INTERRUPTION, BE FREE OF DEFECTS OR VULNERABILITIES, OR REMAIN COMPATIBLE WITH THIRD-PARTY SERVICES OR TECHNOLOGY.
+
+You are responsible for reviewing, testing, securing, configuring, deploying, maintaining, backing up, and operating the Software and every End Product You create, and for Your modifications, customer commitments, data protection, and legal compliance.
+
+The Licensor has no obligation under this License to provide support, maintenance, updates, security patches, service levels, hosting, or future versions. Any such obligation must arise from a separate written agreement.
+
+Nothing in this Section excludes or limits a warranty, condition, or right that cannot lawfully be excluded or limited. An express warranty or support commitment in a separate written agreement is governed by that agreement.
+
+
+12. Limitation of Liability
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE LICENSOR AND ITS OWNERS, EMPLOYEES, CONTRACTORS, AND CONTRIBUTORS WILL NOT BE LIABLE FOR INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES, OR FOR LOSS OR CORRUPTION OF DATA, PROFITS, REVENUE, BUSINESS, CONTRACTS, SAVINGS, USE, OR GOODWILL, ARISING FROM OR RELATED TO THE SOFTWARE, AN END PRODUCT, OR THIS LICENSE, UNDER ANY THEORY OF LIABILITY, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE TOTAL AGGREGATE LIABILITY OF THE LICENSOR AND ITS OWNERS, EMPLOYEES, CONTRACTORS, AND CONTRIBUTORS ARISING FROM OR RELATED TO THE SOFTWARE OR THIS LICENSE WILL NOT EXCEED THE AMOUNT, IF ANY, THAT YOU PAID DIRECTLY TO THE LICENSOR FOR THE SPECIFIC SOFTWARE UNDER THIS LICENSE DURING THE 12 MONTHS BEFORE THE EVENT GIVING RISE TO LIABILITY. FEES FOR HOSTED SERVICES, INFRASTRUCTURE, SUPPORT, OR THIRD-PARTY SERVICES ARE NOT PAYMENTS FOR THE SOFTWARE UNLESS A SEPARATE WRITTEN AGREEMENT EXPRESSLY STATES OTHERWISE.
+
+THESE EXCLUSIONS AND LIMITATIONS DO NOT APPLY TO LIABILITY THAT CANNOT LAWFULLY BE EXCLUDED OR LIMITED, INCLUDING, WHERE APPLICABLE, LIABILITY ARISING FROM FRAUD, WILLFUL MISCONDUCT, OR GROSS NEGLIGENCE, OR LIABILITY FOR DEATH OR PERSONAL INJURY THAT APPLICABLE LAW DOES NOT PERMIT TO BE LIMITED.
+
+
+13. Governing Law, Jurisdiction, and Language
+
+This License and contractual disputes arising from or related to it are governed by the laws of the Republic of Korea, without regard to conflict-of-law rules, except that mandatory laws applicable to intellectual property rights, consumers, or other protected parties remain unaffected.
+
+To the extent permitted by applicable law, disputes arising from or related to this License shall be brought in the competent court having jurisdiction over the Licensor's principal place of business in the Republic of Korea as the court of first instance.
+
+This jurisdiction clause does not deprive a consumer or other protected party of a non-waivable right to bring or defend a claim in another court. Either party may seek temporary, preliminary, injunctive, or other protective relief in any court of competent jurisdiction where reasonably necessary to protect intellectual property rights or prevent imminent harm.
+
+This License is written in English. Any translation is for convenience only. To the extent permitted by applicable law, the English version controls if a translation conflicts with it.
+
+
+14. General Provisions and License Classification
+
+14.1 Reservation of Rights. No rights are granted except those expressly stated in this License. The Licensor reserves all other rights.
+
+14.2 Severability. If a provision is held invalid or unenforceable, it will be limited or modified only to the minimum extent necessary to make it enforceable while preserving its purpose as closely as possible. The remaining provisions remain effective.
+
+14.3 No Waiver. A failure or delay in enforcement is not a waiver. A waiver is effective only if made in writing by the party granting it and only for the specific instance stated.
+
+14.4 Assignment. You may assign Your rights as part of a merger, reorganization, or lawful transfer of substantially all assets associated with an End Product, provided the assignee agrees to this License and the resulting use remains permitted. Any other assignment requires the Licensor's prior written consent. The Licensor may assign this License and the relevant rights to a lawful successor or acquirer.
+
+14.5 Entire License. This License states the complete terms under which the Licensor grants rights in the Software. Separate written agreements may grant additional rights, impose service obligations, or authorize uses otherwise restricted here.
+
+14.6 No Third-Party Beneficiaries. Except for bona fide customers receiving direct rights under Section 3, this License creates no rights for other third parties.
+
+14.7 Source-Available Classification. This is a source-available license. It is not represented as an Open Source Initiative-approved open-source license.
+
+14.8 License Text. Permission is granted to reproduce and distribute an exact, unmodified copy of this License text as necessary to accompany the Software or Modified Software. A modified license text may not use the name "JoripSpace Template License" or imply approval by the Licensor without the Licensor's prior written permission.
+
+
+JoripSpace Template License 1.0
+Version 1.0 — 19 August 2026

@@ -21,3 +21,7 @@ npm run joripspace:doctor
 ```
 
 JoripSpace 프로젝트 ID는 `abcdef`이며, 사용자에게 표시되는 서비스 이름은 `UptimeJorip`입니다.
+
+## 라이선스
+
+이 프로젝트에는 [JoripSpace Template License 1.0](LICENSE.txt)이 적용됩니다.
