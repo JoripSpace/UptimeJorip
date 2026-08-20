@@ -18,7 +18,7 @@
   "mcp_url": "https://api.joripspace.com/mcp",
   "deployment": {
     "mode": "github_actions",
-    "connection_status": "pending",
+    "connection_status": "active",
     "repository_id": "1340248968",
     "repository": "JoripSpace/UptimeJorip",
     "branch": "main",
