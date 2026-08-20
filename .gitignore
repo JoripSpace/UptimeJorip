@@ -54,6 +54,7 @@ Thumbs.db
 Desktop.ini
 
 # JoripSpace local-only artifacts
+.joripspace-build/
 .joripspace/local-backups/
 .joripspace/tmp/
 .joripspace/*.zip
