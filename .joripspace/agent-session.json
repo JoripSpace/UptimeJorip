@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "scope": "shared_workspace",
+  "project": {
+    "id": "abcdef",
+    "slug": "abcdef",
+    "config_file": ".joripspace/project.json"
+  },
+  "agent_guide": {
+    "updated_at": "2026-08-18T17:45:52+09:00"
+  },
+  "collaboration": {
+    "git_tracked": true
+  },
+  "local_auth": {
+    "env_file": ".env.joripspace",
+    "required_environment": [
+      "JORIPSPACE_API_TOKEN"
+    ],
+    "credential_values_in_session": false
+  }
+}

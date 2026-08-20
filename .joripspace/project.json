@@ -1,0 +1,23 @@
+{
+  "onboarding_schema_version": 9,
+  "agent_guide_updated_at": "2026-08-18T17:45:52+09:00",
+  "deployment_policy": {
+    "target": "joripspace",
+    "guide_required": true,
+    "external_hosting_deployment": "blocked",
+    "generic_scaffold_recovery": "convert_to_joripspace",
+    "framework_selection": "agent_managed_dynamic_worker_or_hono",
+    "framework_reassessment": "migrate_pure_worker_to_hono_as_scope_grows",
+    "rendering_default": "server_side_all_user_facing_routes",
+    "user_interaction": "automatic_unless_business_or_destructive_decision_is_required"
+  },
+  "project_id": "abcdef",
+  "project_slug": "abcdef",
+  "default_url": "https://abcdef.joripspace.run",
+  "api_base_url": "https://api.joripspace.com",
+  "mcp_url": "https://api.joripspace.com/mcp",
+  "deployment": {
+    "mode": "direct",
+    "connection_status": "not_connected"
+  }
+}
