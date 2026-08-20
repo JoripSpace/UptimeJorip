@@ -52,7 +52,7 @@ jobs:
             await mkdir(join(root, ".joripspace"), { recursive: true });
             await writeFile(join(root, ".joripspace", "project.json"), JSON.stringify({ entrypoint }) + "\n");
           '
-          (cd "$stage_dir" && zip -q -r "$archive_path" .)
+          (cd "$stage_dir" && zip -q -r "$archive_path" .joripspace auth.js worker.js)
           JORIPSPACE_ARCHIVE_PATH="$archive_path" node --input-type=module <<'JORIPSPACE_SCRIPT'
           async function inlineDeployMain() {
                 const { open } = await import("node:fs/promises");
