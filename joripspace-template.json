@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "template_id": "template_c68fb181fea365988e6b3d1a",
+  "slug": "uptime-jorip",
+  "name": "UptimeJorip",
+  "version": "1.0.0",
+  "description": "",
+  "category": "tools",
+  "source_root": ".",
+  "default_ref": "main",
+  "manifest_path": "joripspace-template.json"
+}
