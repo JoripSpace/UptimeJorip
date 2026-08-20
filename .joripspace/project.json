@@ -17,7 +17,11 @@
   "api_base_url": "https://api.joripspace.com",
   "mcp_url": "https://api.joripspace.com/mcp",
   "deployment": {
-    "mode": "direct",
-    "connection_status": "not_connected"
+    "mode": "github_actions",
+    "connection_status": "pending",
+    "repository_id": "1340248968",
+    "repository": "JoripSpace/UptimeJorip",
+    "branch": "main",
+    "workflow_path": ".github/workflows/joripspace-abcdef.yml"
   }
 }

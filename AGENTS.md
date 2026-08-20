@@ -258,10 +258,17 @@ GitHub automatic deployment setup:
 
 ## Current Deployment Route
 
-Current deployment route: direct JoripSpace deployment.
-- A normal user request such as "배포해줘" is sufficient. Do not ask the user to choose GitHub or repeat deployment plumbing.
-- Run the required checks, then use the JoripSpace MCP checkpoint/deployment path or the existing direct package helper as applicable.
-- Do not create a GitHub Actions workflow or push to GitHub solely to deploy while the project connection is absent, disconnected, invalid, or suspended.
+Current deployment route: GitHub Actions.
+- Connected repository: JoripSpace/UptimeJorip
+- Connected deployment branch: main
+- Expected workflow: .github/workflows/joripspace-abcdef.yml
+- A normal user request such as "배포해줘" is sufficient. Do not ask the user to mention GitHub, Actions, OIDC, workflow setup, commit, or push separately.
+- For an explicit deployment request, inspect and update the workflow when missing or stale, run the required checks, commit the exact relevant changes, and safely push them to the connected deployment branch so GitHub Actions performs the deployment.
+- Do not call create_checkpoint or joripspace:save before this push. GitHub Actions creates the deployment checkpoint, so a pre-push agent checkpoint would duplicate storage and history. Only create a separate checkpoint when the user explicitly asks to save one independently of deployment.
+- Do not call deploy_code, deploy_checkpoint, or the direct package deploy helper for this project while this GitHub route is connected.
+- Never force-push or overwrite unrelated user changes. If the connected branch cannot be updated safely, report the concrete Git conflict or permission blocker.
+- After pushing, verify the resulting JoripSpace deployment through available deployment status or HTTP checks before reporting success.
+- A successful report must state deployment method GitHub Actions, repository, branch, workflow path, pushed commit SHA, Actions result, and JoripSpace deployment ID. Do not report only a checkpoint number or deployment ID.
 
 After MCP or CLI setup:
 - At the start of each new distinct user task, call search_knowledge once with the user's plain request before answering, planning, asking questions, or starting work. Apply the returned user_guidance, recommendation, and actions to both the response and the work, including short user requests. Do not repeat the search for every follow-up in the same task unless the topic changes or current guidance is needed.
