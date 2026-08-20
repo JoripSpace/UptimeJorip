@@ -1,10 +1,60 @@
+# Dependencies
 node_modules/
-.wrangler/
-.cache/
-coverage/
+
+# Build, cache, and test output
 dist/
+build/
+coverage/
+.nyc_output/
+.cache/
+.parcel-cache/
+.turbo/
+.wrangler/
+test-results/
+playwright-report/
+blob-report/
+
+# Environment files and credentials
 .env
 .env.*
 !.env.example
 .env.joripspace
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Runtime data and local databases
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Logs and temporary files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+tmp/
+temp/
+*.tmp
+*.swp
+*.swo
+*~
+
+# Local editor and operating-system files
+.vscode/
+.idea/
+*.code-workspace
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# JoripSpace local-only artifacts
 .joripspace/local-backups/
+.joripspace/tmp/
+.joripspace/*.zip
+.joripspace/*.tar.gz

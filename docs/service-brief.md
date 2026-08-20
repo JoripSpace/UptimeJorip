@@ -1,8 +1,8 @@
 # Service Brief
 
-- Project: abcdef
-- Service name:
-- Description:
+- Service name: UptimeJorip
+- JoripSpace project ID: abcdef
+- Description: 서비스 가동 상태, 점검 기록, 장애 이력을 관리하는 모니터링 서비스
 - Main features:
 - Login/membership:
 - Payment/email/file upload/admin:

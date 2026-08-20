@@ -1,4 +1,8 @@
 {
+  "name": "uptimejorip",
+  "displayName": "UptimeJorip",
+  "version": "1.0.0",
+  "private": true,
   "scripts": {
     "typecheck": "node --check worker.js && node --check auth.js",
     "test": "node --test",
