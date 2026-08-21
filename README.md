@@ -24,4 +24,4 @@ JoripSpace 프로젝트 ID는 `abcdef`이며, 사용자에게 표시되는 서�
 
 ## 라이선스
 
-이 프로젝트에는 [JoripSpace Template License 1.0](LICENSE.txt)이 적용됩니다.
+이 프로젝트에는 [JoripSpace Template License 1.0](LICENSE)이 적용됩니다.
