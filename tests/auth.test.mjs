@@ -59,7 +59,9 @@ test("empty project starts with one-time admin setup", async () => {
   const setupPage = await call(env, "/setup");
   assert.equal(setupPage.response.status, 200);
   assert.match(setupPage.text, /최초 관리자 설정/);
-  assert.match(setupPage.text, /class="setup-shell setup-note"/);
+  assert.match(setupPage.text, /class="setup-shell"/);
+  assert.match(setupPage.text, /class="setup-center-card"/);
+  assert.doesNotMatch(setupPage.text, /setup-stage|setup-form-panel|grid-template-columns:minmax\(0,1\.08fr\)/);
   assert.match(setupPage.text, /당신의 모니터링을/);
   assert.match(setupPage.text, /관리자 계정 만들기/);
   assert.match(setupPage.text, /SUIT\.css/);
