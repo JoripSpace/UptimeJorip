@@ -27,8 +27,6 @@ jobs:
           runtime_paths=(
             worker.js
             auth.js
-            LICENSE
-            migrations
           )
           for source in "${runtime_paths[@]}"; do
             [[ -e "$source" ]] || continue
