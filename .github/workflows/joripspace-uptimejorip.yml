@@ -41,6 +41,7 @@ jobs:
           JORIPSPACE_ARTIFACT_PATH: ".joripspace-artifact"
           JORIPSPACE_ENTRYPOINT: "worker.js"
           JORIPSPACE_API_URL: "https://api.joripspace.com"
+          JORIPSPACE_CHECKPOINT_ID: "chk_mtju99wej9gxx4h7b8"
         run: |
           set -euo pipefail
           source_dir="$JORIPSPACE_ARTIFACT_PATH"
@@ -70,35 +71,40 @@ jobs:
             const archivePath = requiredEnv("JORIPSPACE_ARCHIVE_PATH");
             const apiUrl = requiredEnv("JORIPSPACE_API_URL").replace(/\/+$/, "");
             const oidcToken = await requestOidcToken();
-            const create2 = await api(`/v1/projects/${encodeURIComponent(projectId)}/checkpoint-uploads`, {
-              method: "POST",
-              token: oidcToken,
-              json: { source_type: "deployment" }
-            });
-            const file = await open(archivePath, "r");
-            try {
-              const chunkSize = Number(create2.chunk_size || 8 * 1024 * 1024);
-              const buffer = Buffer.alloc(chunkSize);
-              let partNumber = 1;
-              let position = 0;
-              while (true) {
-                const { bytesRead } = await file.read(buffer, 0, buffer.length, position);
-                if (bytesRead === 0) break;
-                const partPath = String(create2.upload_part_url_template).replace("{part_number}", String(partNumber));
-                await api(partPath, {
-                  method: "PUT",
+            const checkpointOverride = process.env.JORIPSPACE_CHECKPOINT_ID || "";
+            const create2 = checkpointOverride
+              ? { checkpoint_id: checkpointOverride }
+              : await api(`/v1/projects/${encodeURIComponent(projectId)}/checkpoint-uploads`, {
+                  method: "POST",
                   token: oidcToken,
-                  body: buffer.subarray(0, bytesRead),
-                  contentType: "application/octet-stream"
+                  json: { source_type: "deployment" }
                 });
-                position += bytesRead;
-                partNumber += 1;
+            if (!checkpointOverride) {
+              const file = await open(archivePath, "r");
+              try {
+                const chunkSize = Number(create2.chunk_size || 8 * 1024 * 1024);
+                const buffer = Buffer.alloc(chunkSize);
+                let partNumber = 1;
+                let position = 0;
+                while (true) {
+                  const { bytesRead } = await file.read(buffer, 0, buffer.length, position);
+                  if (bytesRead === 0) break;
+                  const partPath = String(create2.upload_part_url_template).replace("{part_number}", String(partNumber));
+                  await api(partPath, {
+                    method: "PUT",
+                    token: oidcToken,
+                    body: buffer.subarray(0, bytesRead),
+                    contentType: "application/octet-stream"
+                  });
+                  position += bytesRead;
+                  partNumber += 1;
+                }
+                if (position === 0) throw new Error("Build artifact ZIP is empty.");
+              } finally {
+                await file.close();
               }
-              if (position === 0) throw new Error("Build artifact ZIP is empty.");
-            } finally {
-              await file.close();
+              await api(create2.complete_url, { method: "POST", token: oidcToken, json: {} });
             }
-            await api(create2.complete_url, { method: "POST", token: oidcToken, json: {} });
             const deployPath = `/v1/projects/${encodeURIComponent(projectId)}/checkpoints/${encodeURIComponent(create2.checkpoint_id)}/deploy`;
             for (let attempt = 1; attempt <= 30; attempt += 1) {
               const deployToken = await requestOidcToken();
