@@ -87,6 +87,7 @@ jobs:
                   token: oidcToken,
                   json: { source_type: "deployment" }
                 });
+            let checkpointId = create2.checkpoint_id || checkpointOverride;
             if (!checkpointOverride) {
               const file = await open(archivePath, "r");
               try {
@@ -111,9 +112,11 @@ jobs:
               } finally {
                 await file.close();
               }
-              await api(create2.complete_url, { method: "POST", token: oidcToken, json: {} });
+              const completed = await api(create2.complete_url, { method: "POST", token: oidcToken, json: {} });
+              checkpointId = completed.checkpoint_id || completed.id || checkpointId;
             }
-            const deployPath = `/v1/projects/${encodeURIComponent(projectId)}/checkpoints/${encodeURIComponent(create2.checkpoint_id)}/deploy`;
+            if (!checkpointId) throw new Error("JoripSpace checkpoint id was not returned.");
+            const deployPath = `/v1/projects/${encodeURIComponent(projectId)}/checkpoints/${encodeURIComponent(checkpointId)}/deploy`;
             for (let attempt = 1; attempt <= 30; attempt += 1) {
               const deployToken = await requestOidcToken();
               const result = await api(deployPath, {
