@@ -85,7 +85,7 @@ jobs:
               : await api(`/v1/projects/${encodeURIComponent(projectId)}/checkpoint-uploads`, {
                   method: "POST",
                   token: oidcToken,
-                  json: { source_type: "agent", label: `GitHub ${process.env.GITHUB_SHA?.slice(0, 7) || "deploy"}` }
+                  json: { source_type: "deployment" }
                 });
             let checkpointId = create2.checkpoint_id || checkpointOverride;
             if (!checkpointOverride) {
@@ -121,10 +121,10 @@ jobs:
             for (let attempt = 1; attempt <= 30; attempt += 1) {
               const deployToken = await requestOidcToken();
               const result = await api(deployPath, {
-                method: "POST",
-                token: deployToken,
-                json: {},
-                allowedStatuses: [409]
+                    method: "POST",
+                    token: deployToken,
+                    json: {},
+                    allowedStatuses: [404, 409]
               });
               if (!result.__retry) {
                 process.stdout.write(
@@ -133,7 +133,7 @@ jobs:
                 );
                 return;
               }
-              if (!["checkpoint_not_deployable", "checkpoint_not_ready", "external_build_deploy_busy"].includes(
+                  if (!["checkpoint_not_found", "checkpoint_not_deployable", "checkpoint_not_ready", "external_build_deploy_busy"].includes(
                 result.error?.code
               )) {
                 throw apiError(result.__status, result);
