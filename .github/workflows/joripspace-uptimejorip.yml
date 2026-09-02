@@ -24,13 +24,21 @@ jobs:
         run: |
           rm -rf .joripspace-artifact
           mkdir -p .joripspace-artifact
-          while IFS= read -r -d '' file; do
-            target=".joripspace-artifact/${file#./}"
+          runtime_paths=(
+            worker.js
+            auth.js
+            package.json
+            package-lock.json
+            LICENSE
+            joripspace-template.json
+            migrations
+          )
+          for source in "${runtime_paths[@]}"; do
+            [[ -e "$source" ]] || continue
+            target=".joripspace-artifact/$source"
             mkdir -p "$(dirname "$target")"
-            cp "$file" "$target"
-          done < <(find . \
-            \( -path './.git' -o -path './node_modules' -o -path './.wrangler' -o -path './.cache' -o -path './coverage' -o -path './.github' -o -path './.joripspace' -o -path './.joripspace-artifact' \) -prune -o \
-            -type f ! -name '.env' ! -name '.env.*' ! -name '.dev.vars' ! -name '*.pem' ! -name '*.key' -print0)
+            cp -R "$source" "$target"
+          done
       - name: Deploy to JoripSpace
         shell: bash
         env:
