@@ -2,7 +2,10 @@ const COOKIE_NAME = "monitor_admin";
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
 const PASSWORD_ITERATIONS = 100000;
 const LEGACY_PASSWORD_ITERATIONS = 20000;
+const DEMO_SESSION_TOKEN = "uptimejorip-demo-admin-v1";
 const schemaReady = new WeakMap();
+const demoReady = new WeakMap();
+export const DEMO_ADMIN = Object.freeze({ id: "demo-admin", username: "demo", role: "admin", active: 1 });
 
 export async function handleAuthRequest(request, env) {
   const url = new URL(request.url);
@@ -11,6 +14,33 @@ export async function handleAuthRequest(request, env) {
       return json({ message: "DB 연결을 확인해 주세요." }, 503);
     }
     return null;
+  }
+
+  if (request.method === "POST" && url.pathname === "/_joripspace/cron/demo-reset") {
+    return json(await resetDemoDataAtMidnight(env.DB));
+  }
+
+  await ensureDemoState(env.DB);
+
+  const demoCookie = parseCookies(request.headers.get("cookie") || "")[COOKIE_NAME];
+  const protectedPage = ["/monitors", "/logs", "/incidents", "/status-page", "/users"].includes(url.pathname) || /^\/monitors\/[^/]+$/.test(url.pathname);
+  if (request.method === "GET" && url.pathname === "/") return demoRedirect(url, "/monitors");
+  if (request.method === "GET" && protectedPage && demoCookie !== DEMO_SESSION_TOKEN) return demoRedirect(url, url.pathname + url.search);
+
+  if (request.method === "GET" && ["/setup", "/login", "/signup", "/auth-settings"].includes(url.pathname)) {
+    return demoRedirect(url, "/monitors");
+  }
+
+  if (url.pathname === "/api/auth/status" && request.method === "GET") {
+    return json({ installed: true, public_signup_enabled: false, user: DEMO_ADMIN, demo_mode: true }, 200, { "set-cookie": cookie(DEMO_SESSION_TOKEN, 31536000) });
+  }
+
+  if (["/api/setup", "/api/signup", "/api/login", "/api/admin/login"].includes(url.pathname) && request.method === "POST") {
+    return json({ ok: true, user: DEMO_ADMIN, demo_mode: true }, 200, { "set-cookie": cookie(DEMO_SESSION_TOKEN, 31536000) });
+  }
+
+  if (url.pathname === "/api/admin/logout" && request.method === "POST") {
+    return json({ ok: true, demo_mode: true }, 200, { "set-cookie": cookie(DEMO_SESSION_TOKEN, 31536000) });
   }
 
   if (url.pathname === "/" && request.method === "GET") {
@@ -89,6 +119,14 @@ async function ensureAuthSchema(db) {
       db.prepare("CREATE INDEX IF NOT EXISTS idx_admin_sessions_expiry ON admin_sessions(expires_at)"),
       db.prepare("CREATE TABLE IF NOT EXISTS admin_login_attempts (attempt_key TEXT PRIMARY KEY, failed_count INTEGER NOT NULL DEFAULT 0, lock_until INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL)"),
       db.prepare("CREATE TABLE IF NOT EXISTS app_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at INTEGER NOT NULL)"),
+      db.prepare("CREATE TABLE IF NOT EXISTS monitors (id TEXT PRIMARY KEY, project_id TEXT NOT NULL DEFAULT 'default', name TEXT NOT NULL, type TEXT NOT NULL DEFAULT 'http', url TEXT NOT NULL, method TEXT NOT NULL DEFAULT 'GET', config_json TEXT NOT NULL DEFAULT '{}', timeout_ms INTEGER NOT NULL DEFAULT 30000, accepted_statuses TEXT NOT NULL DEFAULT '2xx,3xx', slow_threshold_ms INTEGER NOT NULL DEFAULT 3000, status TEXT NOT NULL DEFAULT 'checking', enabled INTEGER NOT NULL DEFAULT 1, public_visible INTEGER NOT NULL DEFAULT 1, version INTEGER NOT NULL DEFAULT 1, consecutive_failures INTEGER NOT NULL DEFAULT 0, last_checked_at INTEGER, last_response_ms INTEGER, last_status_code INTEGER, last_error_code TEXT, last_error_message TEXT, status_changed_at INTEGER NOT NULL, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)"),
+      db.prepare("CREATE TABLE IF NOT EXISTS monitor_runs (run_key TEXT PRIMARY KEY, monitor_id TEXT NOT NULL, scheduled_at INTEGER NOT NULL, success INTEGER NOT NULL, error_code TEXT, created_at INTEGER NOT NULL, source TEXT NOT NULL DEFAULT 'scheduled', response_ms INTEGER, status_code INTEGER, error_message TEXT, FOREIGN KEY (monitor_id) REFERENCES monitors(id) ON DELETE CASCADE)"),
+      db.prepare("CREATE INDEX IF NOT EXISTS idx_monitor_runs_created ON monitor_runs(created_at DESC)"),
+      db.prepare("CREATE INDEX IF NOT EXISTS idx_monitor_runs_monitor ON monitor_runs(monitor_id,created_at DESC)"),
+      db.prepare("CREATE TABLE IF NOT EXISTS incidents (id TEXT PRIMARY KEY, monitor_id TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'open', root_cause TEXT, last_error TEXT, started_at INTEGER NOT NULL, resolved_at INTEGER, duration_seconds INTEGER, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, FOREIGN KEY (monitor_id) REFERENCES monitors(id) ON DELETE CASCADE)"),
+      db.prepare("CREATE INDEX IF NOT EXISTS idx_incidents_monitor ON incidents(monitor_id,started_at DESC)"),
+      db.prepare("CREATE TABLE IF NOT EXISTS monitor_hourly (monitor_id TEXT NOT NULL, bucket_at INTEGER NOT NULL, check_count INTEGER NOT NULL DEFAULT 0, success_count INTEGER NOT NULL DEFAULT 0, failure_count INTEGER NOT NULL DEFAULT 0, response_total_ms INTEGER NOT NULL DEFAULT 0, response_min_ms INTEGER NOT NULL DEFAULT 0, response_max_ms INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (monitor_id,bucket_at), FOREIGN KEY (monitor_id) REFERENCES monitors(id) ON DELETE CASCADE)"),
+      db.prepare("CREATE TABLE IF NOT EXISTS scheduler_runs (scheduled_minute INTEGER PRIMARY KEY, status TEXT NOT NULL, cursor_id TEXT NOT NULL DEFAULT '', lease_until INTEGER NOT NULL DEFAULT 0, queued_count INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, completed_at INTEGER)"),
       db.prepare("CREATE TRIGGER IF NOT EXISTS trg_admin_password_legacy_iterations AFTER UPDATE OF password_hash ON admin_users WHEN NEW.password_iterations = OLD.password_iterations BEGIN UPDATE admin_users SET password_iterations=20000 WHERE id=NEW.id; END"),
       db.prepare("INSERT OR IGNORE INTO app_settings(key,value,updated_at) VALUES('public_signup_enabled','0',?)").bind(now),
       db.prepare("INSERT OR IGNORE INTO app_settings(key,value,updated_at) VALUES('public_signup_role','viewer',?)").bind(now)
@@ -99,6 +137,101 @@ async function ensureAuthSchema(db) {
     schemaReady.set(db, pending);
   }
   await pending;
+}
+
+export async function ensureDemoState(db, timestamp = Date.now()) {
+  await ensureAuthSchema(db);
+  const dateKey = seoulClock(timestamp).dateKey;
+  const cached = demoReady.get(db);
+  if (cached?.dateKey === dateKey) return cached.pending;
+  const pending = (async () => {
+    const row = await db.prepare("SELECT value FROM app_settings WHERE key='demo_seed_date'").first();
+    if (row?.value !== dateKey) await resetDemoData(db, timestamp);
+    return { ok: true, dateKey };
+  })().catch(error => {
+    demoReady.delete(db);
+    throw error;
+  });
+  demoReady.set(db, { dateKey, pending });
+  return pending;
+}
+
+export async function resetDemoData(db, timestamp = Date.now()) {
+  await ensureAuthSchema(db);
+  const now = Number(timestamp);
+  const { dateKey } = seoulClock(now);
+  const demoTokenHash = await sha256(DEMO_SESSION_TOKEN);
+  const monitors = [
+    { id: "demo-home", name: "공식 웹사이트", type: "http", url: "https://example.com/", method: "HEAD", status: "up", enabled: 1, response: 184, code: 200, changed: now - 7 * 86400000 },
+    { id: "demo-api", name: "사용자 API", type: "api", url: "https://example.com/api/health", method: "GET", status: "up", enabled: 1, response: 92, code: 200, changed: now - 14 * 86400000 },
+    { id: "demo-alert", name: "알림 전송 API", type: "http", url: "https://httpstat.us/503", method: "GET", status: "down", enabled: 1, response: 1240, code: 503, changed: now - 22 * 60000 },
+    { id: "demo-batch", name: "야간 배치 작업", type: "http", url: "https://example.com/batch", method: "GET", status: "paused", enabled: 0, response: null, code: null, changed: now - 2 * 86400000 }
+  ];
+  const statements = [
+    db.prepare("DELETE FROM monitor_hourly"),
+    db.prepare("DELETE FROM monitor_runs"),
+    db.prepare("DELETE FROM incidents"),
+    db.prepare("DELETE FROM scheduler_runs"),
+    db.prepare("DELETE FROM monitors"),
+    db.prepare("DELETE FROM admin_sessions"),
+    db.prepare("DELETE FROM admin_login_attempts"),
+    db.prepare("DELETE FROM admin_users"),
+    db.prepare("DELETE FROM app_settings"),
+    db.prepare("INSERT INTO admin_users(id,username,password_hash,password_salt,password_iterations,role,active,last_login_at,created_at,updated_at) VALUES('demo-admin','demo',?,'demo-login-disabled',100000,'admin',1,?,?,?)").bind("0".repeat(64), now, now, now),
+    db.prepare("INSERT INTO admin_users(id,username,password_hash,password_salt,password_iterations,role,active,created_at,updated_at) VALUES('demo-viewer','sample_viewer',?,'demo-login-disabled',100000,'viewer',1,?,?)").bind("0".repeat(64), now - 86400000, now - 86400000),
+    db.prepare("INSERT INTO admin_sessions(token_hash,user_id,expires_at,created_at) VALUES(?,'demo-admin',?,?)").bind(demoTokenHash, now + 366 * 86400000, now),
+    db.prepare("INSERT INTO app_settings(key,value,updated_at) VALUES('public_signup_enabled','0',?)").bind(now),
+    db.prepare("INSERT INTO app_settings(key,value,updated_at) VALUES('public_signup_role','viewer',?)").bind(now),
+    db.prepare("INSERT INTO app_settings(key,value,updated_at) VALUES('demo_seed_date',?,?)").bind(dateKey, now)
+  ];
+  for (const monitor of monitors) {
+    const config = monitor.type === "api" ? JSON.stringify({ keyword: "", jsonPath: "status", expectedValue: "ok", requestBody: "", headers: {} }) : JSON.stringify({ keyword: "", jsonPath: "", expectedValue: "", requestBody: "", headers: {} });
+    statements.push(db.prepare("INSERT INTO monitors(id,project_id,name,type,url,method,config_json,timeout_ms,accepted_statuses,slow_threshold_ms,status,enabled,public_visible,version,consecutive_failures,last_checked_at,last_response_ms,last_status_code,last_error_code,last_error_message,status_changed_at,created_at,updated_at) VALUES(?,'default',?,?,?,?,?,10000,'2xx,3xx',1500,?,?,1,1,?,?,?,?,?,?,?, ?,?)")
+      .bind(monitor.id, monitor.name, monitor.type, monitor.url, monitor.method, config, monitor.status, monitor.enabled, monitor.status === "down" ? 2 : 0, monitor.enabled ? now - 60000 : null, monitor.response, monitor.code, monitor.status === "down" ? "HTTP_STATUS" : null, monitor.status === "down" ? "HTTP status 503" : null, monitor.changed, now - 21 * 86400000, now));
+  }
+  const runSamples = [
+    ["demo-home", true, 184, 200, null, null, now - 60000],
+    ["demo-api", true, 92, 200, null, null, now - 70000],
+    ["demo-alert", false, 1240, 503, "HTTP_STATUS", "HTTP status 503", now - 80000],
+    ["demo-home", true, 201, 200, null, null, now - 3600000],
+    ["demo-api", true, 108, 200, null, null, now - 3610000],
+    ["demo-alert", true, 320, 200, null, null, now - 7200000]
+  ];
+  runSamples.forEach((sample, index) => statements.push(db.prepare("INSERT INTO monitor_runs(run_key,monitor_id,scheduled_at,success,error_code,created_at,source,response_ms,status_code,error_message) VALUES(?,?,?,?,?,?,?,?,?,?)")
+    .bind(`demo-run-${index}`, sample[0], sample[6], sample[1] ? 1 : 0, sample[4], sample[6], "scheduled", sample[2], sample[3], sample[5])));
+  statements.push(
+    db.prepare("INSERT INTO incidents(id,monitor_id,status,root_cause,last_error,started_at,created_at,updated_at) VALUES('demo-incident-open','demo-alert','open','HTTP_STATUS','HTTP status 503',?,?,?)").bind(now - 22 * 60000, now - 22 * 60000, now - 60000),
+    db.prepare("INSERT INTO incidents(id,monitor_id,status,root_cause,last_error,started_at,resolved_at,duration_seconds,created_at,updated_at) VALUES('demo-incident-resolved-1','demo-home','resolved','TIMEOUT','응답 시간이 기준을 초과했습니다.',?,?,420,?,?)").bind(now - 3 * 86400000, now - 3 * 86400000 + 420000, now - 3 * 86400000, now - 3 * 86400000 + 420000),
+    db.prepare("INSERT INTO incidents(id,monitor_id,status,root_cause,last_error,started_at,resolved_at,duration_seconds,created_at,updated_at) VALUES('demo-incident-resolved-2','demo-api','resolved','CONNECTION_ERROR','일시적인 연결 오류가 발생했습니다.',?,?,780,?,?)").bind(now - 8 * 86400000, now - 8 * 86400000 + 780000, now - 8 * 86400000, now - 8 * 86400000 + 780000)
+  );
+  for (const monitor of monitors.slice(0, 3)) {
+    for (let hour = 12; hour >= 1; hour--) {
+      const bucket = Math.floor((now - hour * 3600000) / 3600000) * 3600000;
+      const failed = monitor.id === "demo-alert" && hour <= 1 ? 4 : 0;
+      const checks = 12;
+      const average = monitor.id === "demo-home" ? 170 + (hour % 4) * 12 : monitor.id === "demo-api" ? 88 + (hour % 5) * 9 : 280 + (hour % 3) * 30;
+      statements.push(db.prepare("INSERT INTO monitor_hourly(monitor_id,bucket_at,check_count,success_count,failure_count,response_total_ms,response_min_ms,response_max_ms) VALUES(?,?,?,?,?,?,?,?)")
+        .bind(monitor.id, bucket, checks, checks - failed, failed, average * checks, Math.max(20, average - 35), average + 90));
+    }
+  }
+  statements.push(db.prepare("INSERT INTO scheduler_runs(scheduled_minute,status,cursor_id,lease_until,queued_count,created_at,updated_at,completed_at) VALUES(?,'completed','',0,3,?,?,?)")
+    .bind(Math.floor((now - 60000) / 60000) * 60000, now - 65000, now - 60000, now - 60000));
+  await db.batch(statements);
+  demoReady.set(db, { dateKey, pending: Promise.resolve({ ok: true, dateKey }) });
+  return { ok: true, reset: true, dateKey, monitors: monitors.length };
+}
+
+export async function resetDemoDataAtMidnight(db, timestamp = Date.now()) {
+  const clock = seoulClock(timestamp);
+  if (clock.hour !== 0 || clock.minute > 10) return { ok: true, reset: false, skipped: "outside_midnight_window", dateKey: clock.dateKey };
+  return resetDemoData(db, timestamp);
+}
+
+function seoulClock(timestamp) {
+  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23"
+  }).formatToParts(new Date(timestamp)).filter(part => part.type !== "literal").map(part => [part.type, part.value]));
+  return { dateKey: `${parts.year}-${parts.month}-${parts.day}`, hour: Number(parts.hour), minute: Number(parts.minute) };
 }
 
 async function installFirstAdmin(request, db) {
@@ -228,11 +361,7 @@ async function createSessionResponse(db, user, status = 200) {
 }
 
 async function currentUser(request, db) {
-  const token = parseCookies(request.headers.get("cookie") || "")[COOKIE_NAME];
-  if (!token) return null;
-  const now = Date.now();
-  return await db.prepare("SELECT u.id,u.username,u.role,u.active,s.expires_at FROM admin_sessions s JOIN admin_users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires_at>? AND u.active=1")
-    .bind(await sha256(token), now).first() || null;
+  return DEMO_ADMIN;
 }
 
 async function isInstalled(db) {
@@ -321,6 +450,10 @@ function safeNext(value) {
 
 function redirect(url, path) {
   return Response.redirect(new URL(path, url.origin).toString(), 302);
+}
+
+function demoRedirect(url, path) {
+  return new Response(null, { status: 302, headers: { location: new URL(path, url.origin).toString(), "cache-control": "private, no-store", "set-cookie": cookie(DEMO_SESSION_TOKEN, 31536000) } });
 }
 
 function json(body, status = 200, headers = {}) {

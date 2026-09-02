@@ -50,81 +50,69 @@ async function call(env, path, options = {}) {
 
 function cookie(response) { return response.headers.get("set-cookie").split(";", 1)[0]; }
 
-test("empty project starts with one-time admin setup", async () => {
+test("demo mode seeds sample content and always opens as admin", async () => {
   const env = { DB: new D1Database() };
   const root = await call(env, "/");
   assert.equal(root.response.status, 302);
-  assert.equal(root.response.headers.get("location"), origin + "/setup");
+  assert.equal(root.response.headers.get("location"), origin + "/monitors");
+  assert.match(root.response.headers.get("set-cookie"), /monitor_admin=uptimejorip-demo-admin-v1/);
+  const demoCookie = cookie(root.response);
 
-  const setupPage = await call(env, "/setup");
-  assert.equal(setupPage.response.status, 200);
-  assert.match(setupPage.text, /최초 관리자 설정/);
-  assert.match(setupPage.text, /class="setup-shell"/);
-  assert.match(setupPage.text, /class="setup-intro"/);
-  assert.match(setupPage.text, /class="setup-panel"/);
-  assert.match(setupPage.text, /grid-template-columns:580px 500px/);
-  assert.match(setupPage.text, /justify-content:center/);
-  assert.doesNotMatch(setupPage.text, /setup-center-card|setup-stage|setup-form-panel/);
-  assert.match(setupPage.text, /당신의 모니터링을/);
-  assert.match(setupPage.text, /관리자 계정 만들기/);
-  assert.match(setupPage.text, /SUIT\.css/);
-  assert.match(setupPage.text, /font:14px\/1\.55 SUIT/);
+  const monitorsPage = await call(env, "/monitors", { headers: { cookie: demoCookie } });
+  assert.equal(monitorsPage.response.status, 200);
+  assert.match(monitorsPage.text, /매일 00:00\(KST\)/);
+  assert.match(monitorsPage.text, /SUIT\.css/);
 
-  const mismatch = await call(env, "/api/setup", {
-    method: "POST",
-    body: { username: "owner", password: "secure-password", password_confirmation: "different-password" }
-  });
-  assert.equal(mismatch.response.status, 400);
+  for (const path of ["/logs", "/incidents", "/status-page", "/users", "/monitors/demo-home", "/status", "/health"]) {
+    const page = await call(env, path, { headers: { cookie: demoCookie } });
+    assert.equal(page.response.status, 200, `${path}: ${page.text}`);
+  }
+  const notFound = await call(env, "/not-a-real-route", { headers: { cookie: demoCookie } });
+  assert.equal(notFound.response.status, 404);
 
-  const setup = await call(env, "/api/setup", {
-    method: "POST",
-    body: { username: "owner", password: "secure-password", password_confirmation: "secure-password", public_signup_enabled: false }
-  });
-  assert.equal(setup.response.status, 201, setup.text);
-  assert.match(setup.response.headers.get("set-cookie"), /monitor_admin=/);
-  assert.equal(setup.body.user.role, "admin");
-  assert.equal(env.DB.database.prepare("SELECT password_iterations FROM admin_users WHERE username='owner'").get().password_iterations, 100000);
+  const dashboard = await call(env, "/api/dashboard", { headers: { cookie: demoCookie } });
+  assert.equal(dashboard.response.status, 200, dashboard.text);
+  assert.equal(dashboard.body.me.username, "demo");
+  assert.equal(dashboard.body.me.role, "admin");
+  assert.equal(dashboard.body.monitors.length, 4);
+  assert.deepEqual(dashboard.body.monitors.map(item => item.status).sort(), ["down", "paused", "up", "up"]);
+  assert.equal(dashboard.body.incidents.length, 3);
 
-  const second = await call(env, "/api/setup", {
-    method: "POST",
-    body: { username: "owner2", password: "secure-password", password_confirmation: "secure-password" }
-  });
-  assert.equal(second.response.status, 409);
+  for (const path of ["/setup", "/login", "/signup", "/auth-settings"]) {
+    const response = await call(env, path);
+    assert.equal(response.response.status, 302);
+    assert.equal(response.response.headers.get("location"), origin + "/monitors");
+  }
 });
 
-test("admin controls public signup and self-registered users stay viewers", async () => {
+test("visitor changes are writable and midnight reset restores only sample data", async () => {
   const env = { DB: new D1Database() };
-  const setup = await call(env, "/api/setup", {
+  const root = await call(env, "/");
+  const demoCookie = cookie(root.response);
+
+  const created = await call(env, "/api/monitors", {
     method: "POST",
-    body: { username: "owner", password: "secure-password", password_confirmation: "secure-password" }
+    headers: { cookie: demoCookie },
+    body: { name: "방문자 테스트", type: "http", url: "https://example.org/", method: "GET", timeoutMs: 10000, acceptedStatuses: "2xx", slowThresholdMs: 1500 }
   });
-  const ownerCookie = cookie(setup.response);
+  assert.equal(created.response.status, 201, created.text);
+  assert.equal(env.DB.database.prepare("SELECT COUNT(*) count FROM monitors").get().count, 5);
 
-  const closed = await call(env, "/signup");
-  assert.match(closed.text, /공개 회원가입을 받지 않습니다/);
+  const originalNow = Date.now;
+  Date.now = () => Date.parse("2026-09-02T15:00:00.000Z");
+  try {
+    const reset = await call(env, "/_joripspace/cron/demo-reset", { method: "POST" });
+    assert.equal(reset.response.status, 200, reset.text);
+    assert.equal(reset.body.reset, true);
+    assert.equal(reset.body.dateKey, "2026-09-03");
+  } finally {
+    Date.now = originalNow;
+  }
 
-  const enabled = await call(env, "/api/settings/signup", {
-    method: "PATCH",
-    headers: { cookie: ownerCookie },
-    body: { public_signup_enabled: true }
-  });
-  assert.equal(enabled.response.status, 200, enabled.text);
-
-  const signup = await call(env, "/api/signup", {
-    method: "POST",
-    body: { username: "viewer_one", password: "viewer-password", password_confirmation: "viewer-password", role: "admin" }
-  });
-  assert.equal(signup.response.status, 201, signup.text);
-  assert.equal(signup.body.user.role, "viewer");
-
-  const login = await call(env, "/api/login", {
-    method: "POST",
-    body: { username: "viewer_one", password: "viewer-password" }
-  });
-  assert.equal(login.response.status, 200, login.text);
-  const viewerCookie = cookie(login.response);
-
-  const forbidden = await call(env, "/auth-settings", { headers: { cookie: viewerCookie } });
-  assert.equal(forbidden.response.status, 403);
-  assert.match(forbidden.text, /관리자만 가입 설정/);
+  assert.equal(env.DB.database.prepare("SELECT COUNT(*) count FROM monitors").get().count, 4);
+  assert.equal(env.DB.database.prepare("SELECT COUNT(*) count FROM monitors WHERE name='방문자 테스트'").get().count, 0);
+  assert.equal(env.DB.database.prepare("SELECT COUNT(*) count FROM monitor_runs").get().count, 6);
+  assert.equal(env.DB.database.prepare("SELECT COUNT(*) count FROM incidents").get().count, 3);
+  assert.equal(env.DB.database.prepare("SELECT COUNT(*) count FROM monitor_hourly").get().count, 36);
+  assert.equal(env.DB.database.prepare("SELECT COUNT(*) count FROM admin_users").get().count, 2);
 });
