@@ -85,7 +85,7 @@ jobs:
               : await api(`/v1/projects/${encodeURIComponent(projectId)}/checkpoint-uploads`, {
                   method: "POST",
                   token: oidcToken,
-                  json: { source_type: "deployment" }
+                  json: { source_type: "agent", label: `GitHub ${process.env.GITHUB_SHA?.slice(0, 7) || "deploy"}` }
                 });
             let checkpointId = create2.checkpoint_id || checkpointOverride;
             if (!checkpointOverride) {
@@ -113,6 +113,7 @@ jobs:
                 await file.close();
               }
               const completed = await api(create2.complete_url, { method: "POST", token: oidcToken, json: {} });
+              if (completed?.error?.code) throw apiError(completed.status || 400, completed);
               checkpointId = completed.checkpoint_id || completed.id || checkpointId;
             }
             if (!checkpointId) throw new Error("JoripSpace checkpoint id was not returned.");
