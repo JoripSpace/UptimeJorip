@@ -196,5 +196,10 @@ jobs:
             __name(requiredEnv, "requiredEnv");
           }
           
-          await inlineDeployMain();
+          await inlineDeployMain().catch((error) => {
+            const code = error?.code || "joripspace_deploy_failed";
+            const message = String(error?.message || "JoripSpace deployment failed.").replace(/[\r\n]+/g, " ").slice(0, 300);
+            console.error(`::error title=JoripSpace ${code}::${message}`);
+            throw error;
+          });
           JORIPSPACE_SCRIPT
