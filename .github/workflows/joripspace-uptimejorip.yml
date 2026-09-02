@@ -27,10 +27,7 @@ jobs:
           runtime_paths=(
             worker.js
             auth.js
-            package.json
-            package-lock.json
             LICENSE
-            joripspace-template.json
             migrations
           )
           for source in "${runtime_paths[@]}"; do
