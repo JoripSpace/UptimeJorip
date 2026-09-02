@@ -339,7 +339,7 @@ function html(body, status = 200) {
 
 const AUTH_CSS = `
 :root{--bg:#f7f7f5;--card:#fff;--text:#252522;--muted:#73736d;--line:#deded9;--accent:#2563eb;--accent-dark:#1747b0;--danger:#b9403a}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:14px/1.55 "SUIT Variable",SUIT,system-ui,-apple-system,sans-serif}
 .auth-page{min-height:100vh;display:grid;place-items:center;padding:22px}.auth-card{width:min(420px,100%);padding:30px;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:0 18px 55px rgba(30,30,28,.07)}
 .brand{display:flex;align-items:center;gap:9px;font-weight:800}.brand-dot{width:10px;height:10px;border-radius:50%;background:#3a7d5a}.eyebrow{margin:22px 0 4px;color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.08em}.auth-card h1{margin:0 0 8px;font-size:27px;letter-spacing:-.03em}.auth-card p{margin:0 0 20px;color:var(--muted)}
 .auth-card label{display:grid;gap:6px;margin:12px 0;color:#55534f;font-size:13px}.auth-card input[type=text],.auth-card input[type=password]{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:7px;font:inherit}.auth-card input:focus{outline:2px solid #dceae2;border-color:#85a995}
@@ -369,7 +369,7 @@ const AUTH_CSS = `
 `;
 
 function documentShell(title, content) {
-  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>${title} · UptimeJorip</title><style>${AUTH_CSS}</style></head><body>${content}</body></html>`;
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>${title} · UptimeJorip</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css"><style>${AUTH_CSS}</style></head><body>${content}</body></html>`;
 }
 
 function setupPage() {

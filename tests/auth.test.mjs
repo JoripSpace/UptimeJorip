@@ -62,6 +62,8 @@ test("empty project starts with one-time admin setup", async () => {
   assert.match(setupPage.text, /class="setup-shell setup-note"/);
   assert.match(setupPage.text, /당신의 모니터링을/);
   assert.match(setupPage.text, /관리자 계정 만들기/);
+  assert.match(setupPage.text, /SUIT-Variable\.css/);
+  assert.match(setupPage.text, /"SUIT Variable"/);
 
   const mismatch = await call(env, "/api/setup", {
     method: "POST",
