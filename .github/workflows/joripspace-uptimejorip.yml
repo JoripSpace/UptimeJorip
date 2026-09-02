@@ -53,7 +53,24 @@ jobs:
           rm -rf "$stage_dir"
           mkdir -p "$stage_dir"
           cp -R "$source_dir"/. "$stage_dir"/
-          (cd "$stage_dir" && zip -q -r "$archive_path" .)
+          npm ci --ignore-scripts
+          JORIPSPACE_STAGE_DIR="$stage_dir" JORIPSPACE_ARCHIVE_PATH="$archive_path" node --input-type=module <<'JORIPSPACE_ZIP'
+          import { readdir, readFile, writeFile } from "node:fs/promises";
+          import { join, relative } from "node:path";
+          import { zipSync } from "fflate";
+
+          const root = process.env.JORIPSPACE_STAGE_DIR;
+          const files = {};
+          async function collect(directory) {
+            for (const entry of await readdir(directory, { withFileTypes: true })) {
+              const full = join(directory, entry.name);
+              if (entry.isDirectory()) await collect(full);
+              else if (entry.isFile()) files[relative(root, full).replaceAll("\\", "/")] = [await readFile(full), { level: 6 }];
+            }
+          }
+          await collect(root);
+          await writeFile(process.env.JORIPSPACE_ARCHIVE_PATH, zipSync(files, { level: 6 }));
+          JORIPSPACE_ZIP
           JORIPSPACE_ARCHIVE_PATH="$archive_path" node --input-type=module <<'JORIPSPACE_SCRIPT'
           async function inlineDeployMain() {
             const { open } = await import("node:fs/promises");
