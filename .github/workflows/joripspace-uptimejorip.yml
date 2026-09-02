@@ -1,4 +1,4 @@
-# joripspace-workflow-version: 2
+# joripspace-workflow-version: 4
 name: JoripSpace Deploy
 
 on:
