@@ -433,7 +433,9 @@ function parseCookies(header) {
 }
 
 function cookie(token, maxAge = Math.floor(SESSION_TTL_MS / 1000)) {
-  return COOKIE_NAME + "=" + token + "; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=" + maxAge;
+  // Lax allows the demo session cookie to survive a top-level navigation from
+  // an external template/gallery link while still excluding cross-site POSTs.
+  return COOKIE_NAME + "=" + token + "; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=" + maxAge;
 }
 
 async function readJson(request) {

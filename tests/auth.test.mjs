@@ -56,6 +56,8 @@ test("demo mode seeds sample content and always opens as admin", async () => {
   assert.equal(root.response.status, 302);
   assert.equal(root.response.headers.get("location"), origin + "/monitors");
   assert.match(root.response.headers.get("set-cookie"), /monitor_admin=uptimejorip-demo-admin-v1/);
+  assert.match(root.response.headers.get("set-cookie"), /SameSite=Lax/);
+  assert.doesNotMatch(root.response.headers.get("set-cookie"), /SameSite=Strict/);
   const demoCookie = cookie(root.response);
 
   const monitorsPage = await call(env, "/monitors", { headers: { cookie: demoCookie } });
