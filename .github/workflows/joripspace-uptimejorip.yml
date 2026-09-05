@@ -22,10 +22,6 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Build
         run: |
-          echo "::error file=.github/workflows/joripspace-uptimejorip.yml,line=28,col=1,title=JoripSpace reversible verification::Intentional build SyntaxError verification 20260905; runtime source is unchanged."
-          node --input-type=module --check <<'JORIPSPACE_VERIFICATION'
-          const verification = ;
-          JORIPSPACE_VERIFICATION
           rm -rf .joripspace-artifact
           mkdir -p .joripspace-artifact
           runtime_paths=(
